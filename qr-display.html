@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>実機確認用 QR表示（CultureLens B2B テスト配信）</title>
+<style>
+body { margin:0; padding:24px; background:#ffffff; color:#111; font-family: sans-serif; }
+h1 { font-size:20px; }
+p.note { color:#444; max-width:680px; line-height:1.6; }
+.grid { display:flex; flex-wrap:wrap; gap:32px; }
+figure { margin:0; text-align:center; }
+figure img { width:min(38vw, 320px); height:auto; border:1px solid #ccc; }
+figcaption { margin-top:8px; font-size:15px; }
+.url { font-size:12px; color:#666; }
+</style>
+</head>
+<body>
+<h1>実機確認用 QR表示</h1>
+<p class="note">スマホ側でテスト配信のアプリを開き、「📷 ON」でアプリ内カメラを起動してから、この画面のQRを映してください。標準のカメラアプリで読むと本番（culturelens.jp）へ遷移します。読みにくい場合は画面の輝度を上げてください。QRの中身は印刷カードと同じURL（culturelens.jp向き）で、アプリ内カメラはコードだけを抽出してテスト配信内で解決します。</p>
+<div class="grid" id="grid"></div>
+<script src="vendor/qrcode-generator.js"></script>
+<script>
+var items = [
+  ['https://culturelens.jp/s/TENDN5', '天丼（スポットQR）'],
+  ['https://culturelens.jp/s/EBTST7', '海老天ぷら定食（スポットQR）'],
+  ['https://culturelens.jp/s/KAKGD3', 'かき揚げ丼（スポットQR）'],
+  ['https://culturelens.jp/f/demo-tempura-01', '施設入口QR（天ぷら まるや）'],
+  ['https://culturelens.jp/s/TENPRA', '天丼（サンプル施設の確認用 TENPRA）']
+];
+var grid = document.getElementById('grid');
+items.forEach(function (it) {
+  var qr = qrcode(0, 'M');
+  qr.addData(it[0]);
+  qr.make();
+  var fig = document.createElement('figure');
+  fig.innerHTML = qr.createImgTag(8, 16, it[1]) + '<figcaption>' + it[1] + '<br><span class="url">' + it[0] + '</span></figcaption>';
+  grid.appendChild(fig);
+});
+</script>
+</body>
+</html>
