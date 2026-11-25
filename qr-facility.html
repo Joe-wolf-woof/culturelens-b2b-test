@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>施設入口QR（天ぷら まるや）｜実機確認用</title>
+<style>
+body { margin:0; padding:24px; background:#ffffff; color:#111; font-family: sans-serif; text-align:center; }
+h1 { font-size:20px; }
+p.note { color:#444; max-width:640px; margin:12px auto; line-height:1.6; text-align:left; }
+figure { margin:24px auto; }
+figure img { width:min(80vw, 420px); height:auto; border:1px solid #ccc; }
+figcaption { margin-top:10px; font-size:16px; }
+.url { font-size:13px; color:#666; }
+</style>
+</head>
+<body>
+<h1>施設入口QR（天ぷら まるや）</h1>
+<p class="note">スマホ側でテスト配信のアプリを開き、「📷 ON」でアプリ内カメラを起動してから、この画面のQRだけを映してください。標準のカメラアプリで読むと本番（culturelens.jp）へ遷移します。</p>
+<figure id="fig"></figure>
+<script src="vendor/qrcode-generator.js"></script>
+<script>
+var url = 'https://culturelens.jp/f/demo-tempura-01';
+var qr = qrcode(0, 'M');
+qr.addData(url);
+qr.make();
+document.getElementById('fig').innerHTML = qr.createImgTag(10, 20, '施設入口QR（天ぷら まるや）') + '<figcaption>施設入口QR（天ぷら まるや）<br><span class="url">' + url + '</span></figcaption>';
+</script>
+</body>
+</html>
