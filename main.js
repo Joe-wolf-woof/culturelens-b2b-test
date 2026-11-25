@@ -1089,6 +1089,12 @@ function updateSourceBadge(r) {
 function renderResult(r) {
   hasResult = true;
   lastResult = r;
+  // 実務情報（価格・アレルギー等）は登録スポットの構造化データ専用。
+  // AI生成・モック等の結果では、前に表示していた登録スポットの実務情報が
+  // 残って「AIの内容に付いた情報」と誤読されないよう、ここで隠す。
+  // 登録表示（source='registered'）はこの後 displaySpot が renderPractical で
+  // 出し直すため、登録フローには影響しない（BUG-20261126-01）。
+  if (!r || r.source !== 'registered') $('practical-box').classList.add('hidden');
   updateSourceBadge(r);
   renderTexts();
   const speakText = pick(r.extended_translation, r.extended_translation_ja);
