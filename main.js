@@ -887,6 +887,16 @@ function showFacilityPanel(pack, opts) {
   // 言語切替での出し直し（setResultLang 経由）では数えない
   if (opts && opts.countView) trackFacilityView();
 }
+// 施設エントリを開く共通経路（URL入口 /f/・?f= と、QR検出での施設表示で共用）。
+// プレビュー認可→パック取得→施設パネル表示までを行い、表示したことを
+// ステータスチップ（status_facility_mode）で知らせる。
+async function openFacilityEntry(P, entry) {
+  applyPreviewAuth(entry);
+  const loaded = await P.loadFacilityPack({ entry: entry });
+  currentPack = loaded.pack;
+  showFacilityPanel(currentPack, { countView: true });
+  $('status-chip').textContent = tr('status_facility_mode');
+}
 async function initPackContext() {
   if (!facilityContext || !window.CultureLensPacks) return;
   const P = window.CultureLensPacks;
@@ -903,11 +913,7 @@ async function initPackContext() {
     } else if (facilityContext.source === 'facility') {
       const entry = P.findFacilityEntry(m.manifest, facilityContext.facilityId);
       if (!entry) { showSpotGuidance(tr('guidance_facility_not_found_title'), tr('guidance_facility_unregistered_text')); return; }
-      applyPreviewAuth(entry);
-      const loaded = await P.loadFacilityPack({ entry: entry });
-      currentPack = loaded.pack;
-      showFacilityPanel(currentPack, { countView: true });
-      $('status-chip').textContent = tr('status_facility_mode');
+      await openFacilityEntry(P, entry);
     }
   } catch (e) {
     $('status-chip').textContent = tr('status_pack_load_failed');
@@ -921,7 +927,10 @@ async function initPackContext() {
    検出が終わるまで次を重ねない。BarcodeDetector では映像をそのまま渡し、
    jsQR では最大640px幅に縮小した ImageData だけを作る（負荷抑制）。
    読めたコードは initPackContext と同じ経路（マニフェスト→施設特定→
-   パック取得→displaySpot）で即表示する。同じコードはセッション内で
+   パック取得→displaySpot）で即表示する。施設入口QR（/f/{facility_id}）は
+   openFacilityEntry（URL入口と共用の経路）で施設パネルを開く
+   （BUG-20261126-02: 従来はスポットコードしか処理せず、施設QRを
+   デコードしても捨てていた）。同じコード・同じ施設はセッション内で
    一度だけ表示し、連続検出で再表示を繰り返さない。QRが使えない環境でも
    従来フロー（カメラ認識・一覧選択）はそのまま動く。 */
 const QR_SCAN_INTERVAL = 300;
@@ -930,6 +939,7 @@ let qrTimer = null;
 let qrScanBusy = false;
 let qrKind = null;
 const qrShownCodes = new Set();
+const qrShownFacilityIds = new Set();
 const qrCanvas = document.createElement('canvas');
 const qrCtx = qrCanvas.getContext('2d', { willReadFrequently: true });
 
@@ -967,12 +977,39 @@ async function showSpotByQrCode(code) {
   }
 }
 
+async function showFacilityByQrId(facilityId) {
+  const P = window.CultureLensPacks;
+  if (!P) return;
+  $('status-chip').textContent = tr('status_qr_reading');
+  try {
+    const m = await P.loadManifest({});
+    const entry = P.findFacilityEntry(m.manifest, facilityId);
+    if (!entry) {
+      showSpotGuidance(tr('guidance_facility_not_found_title'), tr('guidance_facility_unregistered_text'));
+      $('status-chip').textContent = tr('status_qr_load_failed');
+      return;
+    }
+    // URL入口（initPackContext の施設分岐）と同じ解決経路で開く
+    await openFacilityEntry(P, entry);
+  } catch (e) {
+    $('status-chip').textContent = tr('status_qr_load_failed');
+  }
+}
+
 async function qrTick() {
   if (!stream || photoMode || qrScanBusy || video.readyState < 2) return;
   qrScanBusy = true;
   try {
-    const found = await qrScanner.detectSpotCode(qrFrame());
-    if (found && !qrShownCodes.has(found.code)) {
+    // qr-scanner.js が古い版（detectTarget 無し）でもスポット検出は従来どおり動かす
+    const found = qrScanner.detectTarget
+      ? await qrScanner.detectTarget(qrFrame())
+      : await qrScanner.detectSpotCode(qrFrame());
+    if (found && found.type === 'facility') {
+      if (!qrShownFacilityIds.has(found.facilityId)) {
+        qrShownFacilityIds.add(found.facilityId);
+        showFacilityByQrId(found.facilityId);
+      }
+    } else if (found && found.code && !qrShownCodes.has(found.code)) {
       qrShownCodes.add(found.code);
       showSpotByQrCode(found.code);
     }
