@@ -15,11 +15,17 @@
  *
  * スポットコードは仕様（culturelens-b2b-url-pack-spec §1.3）に合わせ、
  * 誤読しやすい文字（0/1/I/L/O/U）を除いた大文字英数字6文字とする。
- * 受け付ける検出テキスト:
+ * extractSpotCode が受け付ける検出テキスト:
  * - https://culturelens.jp/s/{code}（パス形式。github.io の接頭辞付きも可）
  * - https://culturelens.jp/?s={code}（クエリ形式）
  * - {code}（裸のコード）
  * それ以外（施設/ツアー入口、別形式、不正なコード）は null を返す。
+ *
+ * 施設入口QR（/f/{facility_id}）は extractFacilityId が担う。施設IDは
+ * 人間可読スラッグ（英小文字・数字・ハイフン。例 demo-tempura-01）で、
+ * 裸の文字列はスポットコードと混同しうるためURL形式だけを受け付ける。
+ * 表示側は統合関数 extractTarget（スポット優先）で両方を扱える。
+ * ツアー入口 /t/ は現段階では予約のみで、表示対象にしない。
  *
  * ブラウザでは window.CultureLensQr として公開し、Node では
  * module.exports する（facility-context.js と同じ形）。
@@ -35,8 +41,41 @@
     return SPOT_CODE_PATTERN.test(code) ? code : null;
   }
 
+  // 施設ID（人間可読スラッグ）: 英小文字・数字とハイフンの並び。
+  // 先頭・末尾は英数字、ハイフンの連続は認めない（例 demo-tempura-01）
+  var FACILITY_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+  function normalizeFacilityId(value) {
+    if (typeof value !== 'string') return null;
+    var id = value.trim();
+    return FACILITY_ID_PATTERN.test(id) ? id : null;
+  }
+
   function safeDecode(value) {
     try { return decodeURIComponent(value); } catch (e) { return value; }
+  }
+
+  /**
+   * 検出テキストをURLとして解釈する共通前処理（スポット／施設で共用）。
+   * URLらしくなければ null。戻り値: { url, segs }（segs はパス区切り）
+   */
+  function parseScannedUrl(value) {
+    var v = value;
+    // スキーム無しの公式ドメイン表記もURLとして扱う
+    if (/^(culturelens\.jp|joe-wolf-woof\.github\.io)\//i.test(v)) {
+      v = 'https://' + v;
+    }
+    var looksLikeUrl = /^https?:\/\//i.test(v) || v.charAt(0) === '/' || v.charAt(0) === '?';
+    if (!looksLikeUrl) return null;
+
+    var url;
+    try {
+      url = new URL(v, 'https://culturelens.jp/');
+    } catch (e) {
+      return null;
+    }
+    var segs = url.pathname.split('/').filter(function (s) { return s !== ''; }).map(safeDecode);
+    return { url: url, segs: segs };
   }
 
   /**
@@ -52,29 +91,59 @@
     var bare = normalizeSpotCode(value);
     if (bare) return bare;
 
-    // スキーム無しの公式ドメイン表記もURLとして扱う
-    if (/^(culturelens\.jp|joe-wolf-woof\.github\.io)\//i.test(value)) {
-      value = 'https://' + value;
-    }
-    var looksLikeUrl = /^https?:\/\//i.test(value) || value.charAt(0) === '/' || value.charAt(0) === '?';
-    if (!looksLikeUrl) return null;
-
-    var url;
-    try {
-      url = new URL(value, 'https://culturelens.jp/');
-    } catch (e) {
-      return null;
-    }
+    var parsed = parseScannedUrl(value);
+    if (!parsed) return null;
 
     // パス形式 /s/{code}（配信形態の接頭辞が付いていても拾う）
-    var segs = url.pathname.split('/').filter(function (s) { return s !== ''; }).map(safeDecode);
+    var segs = parsed.segs;
     for (var i = 0; i + 1 < segs.length; i++) {
       if (segs[i] === 's') return normalizeSpotCode(segs[i + 1]);
     }
     // クエリ形式 ?s={code}
-    if (url.searchParams && url.searchParams.get('s')) {
-      return normalizeSpotCode(url.searchParams.get('s'));
+    if (parsed.url.searchParams && parsed.url.searchParams.get('s')) {
+      return normalizeSpotCode(parsed.url.searchParams.get('s'));
     }
+    return null;
+  }
+
+  /**
+   * QRの検出テキストから施設IDを取り出す純粋関数。
+   * 受け付ける形式（スポットコードと違い、裸の文字列は受け付けない）:
+   * - https://culturelens.jp/f/{facility_id}（パス形式。接頭辞付きも可）
+   * - https://culturelens.jp/?f={facility_id}（クエリ形式）
+   * 取れなければ null。
+   */
+  function extractFacilityId(text) {
+    if (typeof text !== 'string') return null;
+    var value = text.trim();
+    if (!value) return null;
+
+    var parsed = parseScannedUrl(value);
+    if (!parsed) return null;
+
+    // パス形式 /f/{facility_id}（配信形態の接頭辞が付いていても拾う）
+    var segs = parsed.segs;
+    for (var i = 0; i + 1 < segs.length; i++) {
+      if (segs[i] === 'f') return normalizeFacilityId(segs[i + 1]);
+    }
+    // クエリ形式 ?f={facility_id}
+    if (parsed.url.searchParams && parsed.url.searchParams.get('f')) {
+      return normalizeFacilityId(parsed.url.searchParams.get('f'));
+    }
+    return null;
+  }
+
+  /**
+   * QRの検出テキストから「表示対象」を取り出す統合関数。
+   * 戻り値: { type: 'spot', code } | { type: 'facility', facilityId } | null
+   * スポットを先に判定する（1つのURLが両形式に該当することは通常無いが、
+   * スポットQRが主用途のため優先する）。
+   */
+  function extractTarget(text) {
+    var code = extractSpotCode(text);
+    if (code) return { type: 'spot', code: code };
+    var facilityId = extractFacilityId(text);
+    if (facilityId) return { type: 'facility', facilityId: facilityId };
     return null;
   }
 
@@ -108,12 +177,14 @@
   /**
    * 検出器を作成する。options で差し替え可能（単体確認用）:
    * { env, BarcodeDetector, jsQR }
-   * 戻り値: { selectDetector, detect, detectSpotCode, getSelection }
+   * 戻り値: { selectDetector, detect, detectSpotCode, detectTarget, getSelection }
    * - selectDetector(): Promise<{kind:'barcode-detector'|'jsqr'|'none', available:boolean}>
    * - detect(frame): Promise<string|null>（QRの生テキスト）
    *   frame は BarcodeDetector には {source} または映像ソースそのもの、
    *   jsQR には {imageData} または ImageData 相当 {data,width,height} を渡す
    * - detectSpotCode(frame): Promise<{code,text,kind}|null>
+   * - detectTarget(frame): Promise<{type:'spot',code,text,kind} |
+   *     {type:'facility',facilityId,text,kind} | null>（スポット／施設の統合検出）
    */
   function createScanner(options) {
     options = options || {};
@@ -187,11 +258,23 @@
       return { code: code, text: text, kind: selection ? selection.kind : null };
     }
 
+    async function detectTarget(frame) {
+      var text = await detect(frame);
+      var target = extractTarget(text);
+      if (!target) return null;
+      target.text = text;
+      target.kind = selection ? selection.kind : null;
+      return target;
+    }
+
     return {
       selectDetector: selectDetector,
       detect: detect,
       detectSpotCode: detectSpotCode,
+      detectTarget: detectTarget,
       extractSpotCode: extractSpotCode,
+      extractFacilityId: extractFacilityId,
+      extractTarget: extractTarget,
       getSelection: function () { return selection; },
     };
   }
@@ -200,6 +283,10 @@
     SPOT_CODE_PATTERN: SPOT_CODE_PATTERN,
     normalizeSpotCode: normalizeSpotCode,
     extractSpotCode: extractSpotCode,
+    FACILITY_ID_PATTERN: FACILITY_ID_PATTERN,
+    normalizeFacilityId: normalizeFacilityId,
+    extractFacilityId: extractFacilityId,
+    extractTarget: extractTarget,
     getCapabilities: getCapabilities,
     createScanner: createScanner,
   };
