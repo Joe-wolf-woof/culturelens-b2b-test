@@ -1,0 +1,287 @@
+{
+  "facility": {
+    "area": "asakusa",
+    "default_lang": "en",
+    "name": {
+      "en": "Tempura Maruya (demo sample shop)",
+      "ja": "天ぷら まるや（デモ用サンプル店舗）"
+    },
+    "supported_langs": [
+      "en",
+      "ja"
+    ]
+  },
+  "facility_id": "demo-tempura-01",
+  "pack_format_version": 1,
+  "pack_version": 10,
+  "published_at": "2026-11-26T00:00:00+09:00",
+  "spots": [
+    {
+      "spot_id": "demo-tempura-01/tendon",
+      "qr_code": "TENDN5",
+      "status": "published",
+      "category": "menu",
+      "identifiers": {
+        "qr": "TENDN5",
+        "image_ref": null,
+        "geo": null
+      },
+      "media": {
+        "image": null
+      },
+      "content": {
+        "en": {
+          "title": "Tendon (tempura rice bowl)",
+          "literal_translation": "Tempura rice bowl",
+          "extended_translation": "Two shrimp and three seasonal vegetables, fried crisp and laid over hot rice, then glazed with a warm sweet-savory sauce. It was born in Edo-period Tokyo as fast food for working people — a complete meal in a single bowl, eaten quickly and with appetite.",
+          "scene_summary": "The shop's signature bowl: shrimp and vegetable tempura over rice with tare sauce.",
+          "tags": [
+            {
+              "title": "Tendon",
+              "description": "Shrimp and seasonal vegetable tempura served over rice, finished with a soy-based sweet-savory sauce (tare) poured over the top.",
+              "why_it_matters": "It began as stand-up fast food for laborers in Edo-period Tokyo and is still a lunch staple today — everyday comfort food, not a special-occasion dish."
+            },
+            {
+              "title": "Tare sauce",
+              "description": "A warm sauce of soy sauce, mirin and dashi. Each shop guards its own blend, some kept going for decades.",
+              "why_it_matters": "The sauce is what makes one shop's tendon taste different from another's — regulars often choose a shop by its tare."
+            }
+          ],
+          "cultural_gap": "In Japan, a rice bowl topped with fried food is everyday comfort food. The crisp coating softening slightly in the sauce is part of the pleasure, not a flaw.",
+          "curiosity_hook": "Which topping would you lift first — the shrimp, or a vegetable?"
+        },
+        "ja": {
+          "title": "天丼",
+          "literal_translation": "天丼",
+          "extended_translation": "海老2本と季節野菜3種を揚げたてでのせ、温かい甘辛ダレを回しかけた一杯。江戸時代に働く人々の手早い食事として生まれ、丼ひとつで完結する東京の定番です。",
+          "scene_summary": "看板商品。海老と野菜の天ぷらをご飯にのせ、タレをかけた丼。",
+          "tags": [
+            {
+              "title": "天丼",
+              "description": "海老と季節野菜の天ぷらをご飯にのせ、醤油ベースの甘辛いタレをかけたもの。",
+              "why_it_matters": "江戸時代に労働者の立ち食いとして生まれ、今も昼食の定番。特別な料理ではなく日常の comfort food である。"
+            },
+            {
+              "title": "タレ",
+              "description": "醤油・みりん・出汁を合わせた温かいタレ。配合は店ごとの秘伝で、継ぎ足して使い続ける店もある。",
+              "why_it_matters": "天丼の味の決め手はタレであり、常連はタレで店を選ぶことも多い。"
+            }
+          ],
+          "cultural_gap": "日本では揚げ物をご飯にのせた丼は日常食。衣がタレで少ししんなりするのも味のうちとされる。",
+          "curiosity_hook": "最初に食べたいのは海老ですか、野菜ですか？"
+        }
+      },
+      "practical": {
+        "price": {
+          "amount": 1800,
+          "currency": "JPY",
+          "tax_included": true,
+          "note": {
+            "ja": "大盛り +200円",
+            "en": "Large size +¥200"
+          }
+        },
+        "allergens": [
+          "shrimp",
+          "wheat",
+          "egg",
+          "soy"
+        ],
+        "dietary": {
+          "vegetarian": false,
+          "vegan": false,
+          "halal": "not_available"
+        },
+        "last_confirmed_at": "2026-11-26"
+      },
+      "supervision": {
+        "supervised": true,
+        "confirmed_by": "デモ店舗・店主役（制作側が兼務）",
+        "last_confirmed_at": "2026-11-26",
+        "content_version": 1,
+        "confirmed_pack_version": 5
+      },
+      "fallback": {
+        "allow_ai": true,
+        "ai_note": "価格とアレルギーは生成させない"
+      }
+    },
+    {
+      "spot_id": "demo-tempura-01/ebi-teishoku",
+      "qr_code": "EBTST7",
+      "status": "published",
+      "category": "menu",
+      "identifiers": {
+        "qr": "EBTST7",
+        "image_ref": null,
+        "geo": null
+      },
+      "media": {
+        "image": null
+      },
+      "content": {
+        "en": {
+          "title": "Shrimp tempura set meal (teishoku)",
+          "literal_translation": "Shrimp tempura set",
+          "extended_translation": "Three shrimp and seasonal vegetables as tempura, served the teishoku way: on a tray with rice, miso soup and pickles, each in its own small dish. A teishoku is a complete, balanced meal built around one main dish — the standard shape of a Japanese lunch.",
+          "scene_summary": "Shrimp tempura served as a full set meal with rice, miso soup and pickles.",
+          "tags": [
+            {
+              "title": "Teishoku (set meal)",
+              "description": "A tray set of a main dish, rice, miso soup and pickles. The idea is balance: a little of everything, arranged so the meal completes itself.",
+              "why_it_matters": "Teishoku is the default format of everyday eating out in Japan. Knowing the format tells you what will arrive before you order."
+            },
+            {
+              "title": "How it is eaten",
+              "description": "There is no strict rule, but a common rhythm is a bite of tempura, a little rice, then a sip of miso soup — moving around the tray rather than finishing one dish at a time.",
+              "why_it_matters": "The rice is there to reset the palate between bites of fried food, which is why it is served plain."
+            }
+          ],
+          "cultural_gap": "Outside Japan a 'set' often means a discount bundle. A teishoku is instead a composition: the soup and pickles are part of the dish, not extras.",
+          "curiosity_hook": "Would you start with the shrimp, or save it for last?"
+        },
+        "ja": {
+          "title": "海老天ぷら定食",
+          "literal_translation": "海老天ぷら定食",
+          "extended_translation": "海老3本と季節野菜の天ぷらを、ご飯・味噌汁・漬物と一緒に盆に揃えた定食形式。主菜を中心に食事全体が完結する、日本の昼食の標準形です。",
+          "scene_summary": "海老天ぷらをご飯・味噌汁・漬物と揃えた定食。",
+          "tags": [
+            {
+              "title": "定食",
+              "description": "主菜・ご飯・味噌汁・漬物を一揃いにした形式。少しずつ多品目を揃え、食事として完結させる考え方。",
+              "why_it_matters": "日本の外食の標準形であり、形式を知れば注文前に何が出るか分かる。"
+            },
+            {
+              "title": "食べ方",
+              "description": "厳密な決まりはないが、天ぷら一口、ご飯少し、味噌汁一口と、盆の上を回るように食べるのが一般的。",
+              "why_it_matters": "白いご飯は揚げ物の合間に口を整える役割を持ち、そのため味付けされていない。"
+            }
+          ],
+          "cultural_gap": "海外では「セット」は割引の束として捉えられがちだが、定食は汁物と漬物まで含めた一つの構成である。",
+          "curiosity_hook": "海老は最初に食べますか、最後に残しますか？"
+        }
+      },
+      "practical": {
+        "price": {
+          "amount": 2400,
+          "currency": "JPY",
+          "tax_included": true,
+          "note": {
+            "ja": "ご飯の大盛り無料",
+            "en": "Free large rice"
+          }
+        },
+        "allergens": [
+          "shrimp",
+          "wheat",
+          "egg",
+          "soy"
+        ],
+        "dietary": {
+          "vegetarian": false,
+          "vegan": false,
+          "halal": "not_available"
+        },
+        "last_confirmed_at": "2026-11-26"
+      },
+      "supervision": {
+        "supervised": true,
+        "confirmed_by": "デモ店舗・店主役（制作側が兼務）",
+        "last_confirmed_at": "2026-11-26",
+        "content_version": 1,
+        "confirmed_pack_version": 6
+      },
+      "fallback": {
+        "allow_ai": true,
+        "ai_note": "価格とアレルギーは生成させない"
+      }
+    },
+    {
+      "spot_id": "demo-tempura-01/kakiage-don",
+      "qr_code": "KAKGD3",
+      "status": "published",
+      "category": "menu",
+      "identifiers": {
+        "qr": "KAKGD3",
+        "image_ref": null,
+        "geo": null
+      },
+      "media": {
+        "image": null
+      },
+      "content": {
+        "en": {
+          "title": "Kakiage-don (mixed fritter rice bowl)",
+          "literal_translation": "Mixed shrimp and vegetable fritter rice bowl",
+          "extended_translation": "Small shrimp and onion are mixed into batter and fried together as one golden disc — that disc is kakiage. Served over rice with a sweet-savory sauce. English has no single word for it, because the technique itself, frying mixed ingredients as one piece, is the dish.",
+          "scene_summary": "A crisp mixed fritter of small shrimp and onion over rice with sauce.",
+          "tags": [
+            {
+              "title": "Kakiage",
+              "description": "Chopped ingredients mixed into batter and fried as a single round fritter. Born at Edo-period street stalls as a way to make small, inexpensive ingredients into a satisfying topping.",
+              "why_it_matters": "It turns scraps into the main event — a good example of the no-waste instinct in Japanese everyday cooking."
+            },
+            {
+              "title": "The texture",
+              "description": "Crisp edges, tender center. Because the ingredients are mixed, every bite contains shrimp, onion and batter together rather than one ingredient at a time.",
+              "why_it_matters": "That mixed bite is exactly what a plain translation cannot convey — and what the dish is loved for."
+            }
+          ],
+          "cultural_gap": "A fritter made of mixed leftovers might sound humble, but kakiage is a named specialty with devoted fans — humble ingredients, deliberate technique.",
+          "curiosity_hook": "Listen for the crunch at the edge of the disc — that is the part cooks are judged by."
+        },
+        "ja": {
+          "title": "かき揚げ丼",
+          "literal_translation": "かき揚げ丼",
+          "extended_translation": "小海老と玉ねぎを衣に混ぜて一枚に揚げた「かき揚げ」を、ご飯にのせて甘辛ダレをかけた丼。具材を混ぜて一体に揚げる技法そのものが料理名になっており、英語に一語の対応がありません。",
+          "scene_summary": "小海老と玉ねぎのかき揚げをご飯にのせた丼。",
+          "tags": [
+            {
+              "title": "かき揚げ",
+              "description": "刻んだ具材を衣に混ぜ、一枚の円盤状に揚げた天ぷら。江戸の屋台で、小さく安い具材を満足感のある一品にするために生まれた。",
+              "why_it_matters": "端材を主役に変える、日本の日常料理の「無駄にしない」発想の好例。"
+            },
+            {
+              "title": "食感",
+              "description": "縁はカリッと、中心はしっとり。具材が混ざっているため、一口ごとに海老・玉ねぎ・衣が一緒に来る。",
+              "why_it_matters": "この「混ざった一口」こそが直訳では伝わらず、この品が愛される理由である。"
+            }
+          ],
+          "cultural_gap": "混ぜ物の揚げ物は質素に聞こえるかもしれないが、かき揚げは名のある専門品であり、端材と技法の組み合わせが価値になっている。",
+          "curiosity_hook": "円盤の縁のカリッという音に注目 — 職人の腕が一番出る部分です。"
+        }
+      },
+      "practical": {
+        "price": {
+          "amount": 1300,
+          "currency": "JPY",
+          "tax_included": true
+        },
+        "allergens": [
+          "shrimp",
+          "wheat",
+          "egg",
+          "soy"
+        ],
+        "dietary": {
+          "vegetarian": false,
+          "vegan": false,
+          "halal": "not_available"
+        },
+        "last_confirmed_at": "2026-11-26"
+      },
+      "supervision": {
+        "supervised": true,
+        "confirmed_by": "デモ店舗・店主役（制作側が兼務）",
+        "last_confirmed_at": "2026-11-26",
+        "content_version": 1,
+        "confirmed_pack_version": 7
+      },
+      "fallback": {
+        "allow_ai": true,
+        "ai_note": "価格とアレルギーは生成させない"
+      }
+    }
+  ],
+  "updated_at": "2026-11-25T18:27:58.890Z"
+}

@@ -1,0 +1,38 @@
+{
+  "manifest_version": 1,
+  "facilities": [
+    {
+      "facility_id": "sample-tempura-01",
+      "pack_version": 2,
+      "pack_url": "packs/sample-tempura-01.json",
+      "updated_at": "2026-11-26T00:00:00+09:00",
+      "spots_index": {
+        "TENPRA": "sample-tempura-01"
+      }
+    },
+    {
+      "facility_id": "demo-tempura-01",
+      "pack_version": 10,
+      "pack_url": "packs/demo-tempura-01.json",
+      "updated_at": "2026-11-25T18:27:58.890Z",
+      "spots_index": {
+        "TENDN5": "demo-tempura-01",
+        "EBTST7": "demo-tempura-01",
+        "KAKGD3": "demo-tempura-01"
+      },
+      "preview_token": "qdI1T3g3FKEZptcODdwaVmhZ"
+    },
+    {
+      "facility_id": "staging-check-01",
+      "pack_version": 1,
+      "pack_url": "packs/staging-check-01.json",
+      "updated_at": "2026-11-26T00:00:00+09:00",
+      "spots_index": {
+        "STGDF8": "staging-check-01",
+        "STGSP4": "staging-check-01",
+        "STGRT6": "staging-check-01"
+      },
+      "preview_token": "d2GDW3G-313l75fxLV_YDHei"
+    }
+  ]
+}

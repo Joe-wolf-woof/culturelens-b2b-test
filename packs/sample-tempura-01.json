@@ -1,0 +1,121 @@
+{
+  "pack_format_version": 1,
+  "facility_id": "sample-tempura-01",
+  "pack_version": 2,
+  "published_at": "2026-11-26T00:00:00+09:00",
+  "updated_at": "2026-11-26T00:00:00+09:00",
+  "facility": {
+    "name": {
+      "ja": "サンプル天ぷら店（デモ用）",
+      "en": "Sample Tempura Shop (demo)"
+    },
+    "area": "sample",
+    "supported_langs": [
+      "en",
+      "zh",
+      "ja"
+    ],
+    "default_lang": "en"
+  },
+  "spots": [
+    {
+      "spot_id": "sample-tempura-01/tendon",
+      "qr_code": "TENPRA",
+      "status": "published",
+      "category": "menu",
+      "identifiers": {
+        "qr": "TENPRA",
+        "image_ref": null,
+        "geo": null
+      },
+      "media": {
+        "image": null
+      },
+      "content": {
+        "en": {
+          "title": "Tendon (tempura rice bowl)",
+          "literal_translation": "Tempura rice bowl",
+          "extended_translation": "A bowl of rice crowned with crisp tempura, glazed with a sweet-savory sauce — a fast, filling classic born in old Tokyo.",
+          "scene_summary": "Sample registered content for the demo pack.",
+          "tags": [
+            {
+              "title": "Tendon",
+              "x": 0.5,
+              "y": 0.5,
+              "description": "Shrimp and seasonal vegetables, battered and fried, served over rice with tentsuyu-based sauce.",
+              "why_it_matters": "It began as quick stand-up food for working people in Edo-period Tokyo, and is still a lunch staple."
+            }
+          ],
+          "cultural_gap": "In Japan, a rice bowl topped with fried food is everyday comfort food, not a special-occasion dish.",
+          "curiosity_hook": "Which tempura topping would you pick first?"
+        },
+        "zh": {
+          "title": "天丼（什锦天妇罗盖饭）",
+          "literal_translation": "天妇罗盖饭",
+          "extended_translation": "一碗米饭上盖着酥脆的天妇罗，淋上甜咸适口的酱汁——源自老东京、快捷又满足的经典一餐（示例登记内容）。",
+          "scene_summary": "演示包的示例登记内容。",
+          "tags": [
+            {
+              "title": "天丼",
+              "x": 0.5,
+              "y": 0.5,
+              "description": "虾和时令蔬菜裹上面糊油炸后放在米饭上，淋上以天汁为基底的酱汁。",
+              "why_it_matters": "它起源于江户时代，是劳动者站着吃的快捷食物，如今仍是午餐的经典选择。"
+            }
+          ],
+          "cultural_gap": "在日本，把油炸食物放在米饭上的盖饭是日常的家常美味，而不是特殊场合的菜肴。",
+          "curiosity_hook": "您最先想吃哪一种天妇罗配料？"
+        },
+        "ja": {
+          "title": "天丼",
+          "literal_translation": "天丼",
+          "extended_translation": "ご飯の上に揚げたての天ぷらをのせ、甘辛いタレをかけた、江戸生まれの手早く満足できる定番の一杯（サンプル登録コンテンツ）。",
+          "scene_summary": "デモパック用のサンプル登録コンテンツ。",
+          "tags": [
+            {
+              "title": "天丼",
+              "x": 0.5,
+              "y": 0.5,
+              "description": "海老と季節野菜の天ぷらをご飯にのせ、天つゆベースのタレをかけたもの。",
+              "why_it_matters": "江戸時代に働く人々の立ち食いとして生まれ、今も昼食の定番である。"
+            }
+          ],
+          "cultural_gap": "日本では、揚げ物をご飯にのせた丼は特別な料理ではなく日常の comfort food である。",
+          "curiosity_hook": "最初に食べたい天ぷらの具は何ですか？"
+        }
+      },
+      "practical": {
+        "price": {
+          "amount": 1800,
+          "currency": "JPY",
+          "tax_included": true,
+          "note": {
+            "ja": "サンプル価格",
+            "en": "Sample price"
+          }
+        },
+        "allergens": [
+          "shrimp",
+          "wheat",
+          "egg"
+        ],
+        "dietary": {
+          "vegetarian": false,
+          "vegan": false,
+          "halal": "not_available"
+        },
+        "last_confirmed_at": "2026-11-26"
+      },
+      "supervision": {
+        "supervised": false,
+        "confirmed_by": null,
+        "last_confirmed_at": "2026-11-26",
+        "content_version": 1
+      },
+      "fallback": {
+        "allow_ai": true,
+        "ai_note": "価格とアレルギーは生成させない"
+      }
+    }
+  ]
+}

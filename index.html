@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>拡張翻訳 - CultureLens（MVP）</title>
+<link rel="stylesheet" href="css/style.css?v=20261126-1">
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="title">拡張翻訳 - CultureLens <span class="badge">MVP 実験機</span></div>
+  <button id="btn-settings" class="ghost">⚙ 設定</button>
+</header>
+
+<!-- カメラ + Three.js 空間レイヤー -->
+<section id="stage">
+  <video id="camera" autoplay playsinline muted></video>
+  <img id="photo" class="hidden" alt="選択中の写真">
+  <canvas id="gl"></canvas>
+  <div id="subtitle-bar" class="hidden">
+    <div id="subtitle-original" class="sub-original"></div>
+    <div id="subtitle-extended" class="sub-extended"></div>
+  </div>
+  <div id="status-chip">カメラ未起動</div>
+  <button id="btn-toggle-result" title="翻訳結果の表示/非表示">💬 翻訳を表示/非表示にする</button>
+  <button id="btn-lang" title="表示言語の切り替え（English／简体中文／한국어／日本語）"><b>EN</b> ▾</button>
+  <div id="lang-menu" class="hidden">
+    <button data-lang="en">English</button>
+    <button data-lang="zh">简体中文</button>
+    <button data-lang="ko">한국어</button>
+    <button data-lang="ja">日本語</button>
+  </div>
+</section>
+
+<!-- 写真モードの操作（案A: ステージの外に出し、字幕と重ならないようにする） -->
+<div id="photo-bar" class="hidden">
+  <button id="btn-photo-translate" class="accent">🌐 この写真で拡張翻訳</button>
+  <button id="btn-photo-save">💾 保存</button>
+  <button id="btn-photo-retake">↩ 撮り直す／選び直す</button>
+</div>
+
+<!-- キーレス案内（B-9）: 登録スポットはキーなしで表示でき、AI生成は追加機能であることを示す -->
+<div id="keyless-notice" class="hidden"></div>
+
+<!-- 施設モード（E-22/E-23）: 施設パックが適用されたときに施設名とスポット一覧を出す -->
+<section id="facility-panel" class="panel hidden">
+  <h2 id="facility-name"></h2>
+  <div id="facility-spots"></div>
+</section>
+
+<!-- 入力コントロール -->
+<section class="panel controls">
+  <div class="row actions">
+    <button id="btn-camera" class="primary off">📷 ON</button>
+    <button id="btn-translate" class="accent" disabled>🌐拡張翻訳(EN/あ)</button>
+    <button id="btn-record" class="primary" disabled>🎙 語る（音声入力）</button>
+  </div>
+  <div class="row actions">
+    <button id="btn-shutter" class="primary" disabled>📸 写真を撮る</button>
+    <button id="btn-pick" class="primary">🖼 写真を選ぶ</button>
+  </div>
+  <input type="file" id="file-photo" accept="image/*" class="hidden">
+  <div id="photo-history" class="hidden">
+    <span class="lbl">撮った写真（このセッションのみ）</span>
+    <div id="photo-thumbs"></div>
+  </div>
+  <label class="lbl">📷カメラに見せる/🎙話しかける/📝手入力する</label>
+  <textarea id="transcript" rows="3" placeholder="例：これは熊の木彫りです。北海道の有名な工芸品です。"></textarea>
+  <div class="row small">
+    <label><span>翻訳した結果を読み上げる</span> <input type="checkbox" id="chk-speak" checked></label>
+    <label><span>デモデータで試す（APIキー不要）</span> <input type="checkbox" id="chk-demo"></label>
+  </div>
+</section>
+
+<!-- AI障害時の案内（F-30）: AI生成の失敗だけをここに出す。登録コンテンツの表示には影響しない -->
+<section id="ai-failure" class="panel hidden">
+  <h2 id="ai-failure-title"></h2>
+  <p id="ai-failure-text"></p>
+  <div class="row">
+    <button id="btn-ai-retry" class="accent">🔁 AI生成だけ再試行する</button>
+  </div>
+</section>
+
+<!-- 文化タグ詳細 -->
+<section class="panel">
+  <h2>異文化の背景知識タグ</h2>
+  <div class="row">
+    <button id="btn-compare" class="ghost" disabled>🔍 EN・日本語で見比べる</button>
+    <button id="btn-demo-compare" class="ghost" disabled>🆚 直訳と拡張翻訳を見比べる（デモ用）</button>
+  </div>
+  <div id="source-badge" class="hidden"></div>
+  <!-- プレビュー表示（4-3）: 事業者の公開前確認で draft を表示したときだけ出す -->
+  <div id="preview-badge" class="hidden"></div>
+  <div id="tags-empty" class="muted">まだタグがありません。景色に向けて「拡張翻訳する」を押してください。</div>
+  <div id="tag-cards"></div>
+  <div id="gap-box" class="hidden">
+    <h3>🧳 異なる文化とのギャップ</h3>
+    <p id="gap-text"></p>
+    <h3>🗺️ もっと知りたくなる好奇心フック</h3>
+    <p id="hook-text"></p>
+  </div>
+  <!-- 実務情報（A-5）: 価格・アレルギー等をAIの文章と混ぜない専用エリアに構造化表示する -->
+  <div id="practical-box" class="hidden">
+    <h3 id="practical-title">📌 実務情報</h3>
+    <div id="practical-body"></div>
+  </div>
+  <!-- 誤り報告の導線（2-15、F-31）: スポットや結果が表示されたときだけ出す。閲覧の邪魔にならない位置に置く -->
+  <div class="row">
+    <button id="btn-report" class="ghost hidden">⚠ 内容の誤りを報告</button>
+  </div>
+</section>
+
+<!-- 廃止・停止スポットの案内（仕様§1.5）: AI生成へは自動で落とさない -->
+<section id="spot-guidance" class="panel hidden">
+  <h2 id="guidance-title"></h2>
+  <p id="guidance-text"></p>
+</section>
+
+<!-- 見比べシート -->
+<div id="compare" class="modal hidden">
+  <div class="modal-box compare-box">
+    <h2>EN・日本語 見比べ</h2>
+    <div id="compare-body"></div>
+    <div class="row">
+      <button id="btn-close-compare" class="ghost">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- 直訳と拡張翻訳の比較ビュー（5-4、デモ用）: 明示操作でのみ開き、通常表示へ戻れる -->
+<div id="demo-compare" class="modal hidden">
+  <div class="modal-box compare-box">
+    <div id="demo-compare-banner"></div>
+    <h2 id="demo-compare-title"></h2>
+    <div id="demo-compare-body"></div>
+    <div class="row">
+      <button id="btn-close-demo-compare" class="ghost">通常表示に戻る</button>
+    </div>
+  </div>
+</div>
+
+<!-- 誤り報告（2-15、F-31）: 対象と種別を選び、任意の自由文とともに制作側へ送る。文面は i18n.js（4言語） -->
+<div id="report" class="modal hidden">
+  <div class="modal-box compare-box">
+    <h2 id="report-title"></h2>
+    <p id="report-intro" class="muted"></p>
+    <label class="lbl" id="report-reporter-label" for="report-reporter"></label>
+    <select id="report-reporter">
+      <option value="visitor"></option>
+      <option value="business"></option>
+    </select>
+    <label class="lbl" id="report-target-label" for="report-target"></label>
+    <select id="report-target">
+      <option value="registered"></option>
+      <option value="ai"></option>
+      <option value="practical"></option>
+      <option value="other"></option>
+    </select>
+    <label class="lbl" id="report-category-label" for="report-category"></label>
+    <select id="report-category">
+      <option value="price"></option>
+      <option value="allergen"></option>
+      <option value="hours"></option>
+      <option value="translation"></option>
+      <option value="content"></option>
+      <option value="other"></option>
+    </select>
+    <label class="lbl" id="report-text-label" for="report-text"></label>
+    <textarea id="report-text" rows="3" maxlength="500"></textarea>
+    <p id="report-privacy" class="muted"></p>
+    <p id="report-status" class="hidden"></p>
+    <div class="row">
+      <button id="btn-report-send" class="accent"></button>
+      <button id="btn-report-close" class="ghost"></button>
+    </div>
+  </div>
+</div>
+
+<!-- 設定モーダル -->
+<div id="settings" class="modal hidden">
+  <div class="modal-box">
+    <h2>設定</h2>
+    <label class="lbl">Gemini APIキー（端末内 localStorage にのみ保存、コードには含まれません）</label>
+    <input type="password" id="api-key" placeholder="AIza...">
+    <div class="row">
+      <button id="btn-save-key" class="primary">保存</button>
+      <button id="btn-close-settings" class="ghost">閉じる</button>
+    </div>
+    <p class="muted">キーが無い場合はモック応答でUIを確認できます（「デモデータで試す」推奨）。</p>
+  </div>
+</div>
+
+<script src="./i18n.js?v=20261126-4"></script>
+<script src="./facility-context.js?v=20261126-2"></script>
+<script src="./keyless-mode.js?v=20261126-1"></script>
+<script src="./ai-failure.js?v=20261126-1"></script>
+<script src="./pack-loader.js?v=20261126-2"></script>
+<script src="./demo-compare.js?v=20261126-1"></script>
+<script src="./metrics.js?v=20261126-1"></script>
+<script src="./vendor/jsQR.js?v=1.4.0"></script>
+<script src="./qr-scanner.js?v=20261126-1"></script>
+<script type="module" src="./main.js?v=20261126-9"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CultureLens（テスト配信）</title>
+<script>
+(function () {
+  // CultureLens の入口URL（/f/… /s/… /t/…）を、アプリが受け取れる
+  // クエリ形式（?f= ?s= ?t=）へ変換して転送する。
+  // GitHub Pages は未知のパスにこの 404.html を返すため、印刷QRの
+  // パス形式URLはここで受け止める。アプリ側の受け口は 2-1 で実装済み。
+  //
+  // テスト配信用の調整点（本番 culturelens.jp 用 404.html との差分）：
+  // computeTarget のロジック自体はベースパス汎用（入口キーの手前までを
+  // 基底として保持する）ため無変更。異なるのはこのファイルの置き場が
+  // プロジェクトサイト /culturelens-b2b-test/ 配下であることと、
+  // 下部リンクの向き先だけ。
+  function computeTarget(loc) {
+    var segs = loc.pathname.split('/').filter(function (x) { return x !== ''; });
+    for (var i = 0; i + 1 < segs.length; i++) {
+      var key = segs[i];
+      if (key === 'f' || key === 's' || key === 't') {
+        var base = i === 0 ? '/' : '/' + segs.slice(0, i).join('/') + '/';
+        var params = new URLSearchParams(loc.search);
+        var val = segs[i + 1];
+        try { val = decodeURIComponent(val); } catch (e) { /* そのまま使う */ }
+        params.set(key, val);
+        return loc.origin + base + '?' + params.toString();
+      }
+    }
+    // 入口パスでない場合はサイトのトップへ。
+    // github.io のプロジェクトサイトでは第1セグメントがリポジトリ名。
+    if (/(^|\.)github\.io$/.test(loc.hostname) && segs.length) {
+      return loc.origin + '/' + segs[0] + '/';
+    }
+    return loc.origin + '/';
+  }
+  var target = computeTarget(location);
+  if (target && target !== location.href) location.replace(target);
+})();
+</script>
+</head>
+<body>
+<p>CultureLens（テスト配信）へ移動しています… <a href="/culturelens-b2b-test/">トップを開く</a></p>
+</body>
+</html>
